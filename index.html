@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নিরাপদ যাত্রা - লাইভ ম্যাপ ঈদ স্পেশাল</title>
+    <title>নিরাপদ যাত্রা প্রো - স্মার্ট লাইভ ট্র্যাকার</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d63031">
@@ -12,66 +12,108 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        :root { --danger: #d63031; --warning: #f1c40f; --success: #27ae60; --dark: #2d3436; --light: #f4f7f6; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light); margin: 0; padding-bottom: 80px; }
+        :root { --danger: #eb4d4b; --warning: #f9ca24; --success: #6ab04c; --dark: #130f40; --glass: rgba(255, 255, 255, 0.9); }
         
-        header { background: var(--danger); color: white; padding: 20px 15px; text-align: center; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 22px; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 90px; color: var(--dark); overflow-x: hidden; }
         
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        
-        /* Map Style */
-        #map { height: 300px; width: 100%; border-radius: 15px; margin-bottom: 20px; border: 2px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1; }
-        
-        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-        select, input, textarea { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        
-        .btn-report { background: var(--danger); color: white; border: none; border-radius: 10px; padding: 15px; font-size: 16px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.3s; }
-        .btn-report:disabled { background: #ccc; }
+        /* Glassmorphism Header */
+        header { 
+            background: var(--danger); color: white; padding: 30px 20px; text-align: center; 
+            border-radius: 0 0 30px 30px; box-shadow: 0 10px 20px rgba(235, 77, 75, 0.3);
+            position: sticky; top: 0; z-index: 1000;
+        }
 
-        .update-item { background: #fff; border-left: 5px solid var(--danger); padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-        .tag { font-size: 11px; padding: 4px 8px; border-radius: 12px; color: white; font-weight: bold; display: inline-block; margin-bottom: 5px; }
-        .tag-jam { background: var(--warning); color: black; }
-        .tag-accident { background: var(--danger); }
-        .tag-clear { background: var(--success); }
+        .container { padding: 15px; max-width: 650px; margin: auto; }
+        
+        /* Smart Map View */
+        #map { 
+            height: 350px; width: 100%; border-radius: 20px; margin-top: -20px; 
+            border: 4px solid white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); z-index: 10;
+        }
+        
+        /* Floating Card Design */
+        .card { 
+            background: var(--glass); backdrop-filter: blur(10px); border-radius: 20px; 
+            padding: 25px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
 
-        .footer-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -3px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .nav-item { text-decoration: none; color: var(--dark); font-size: 11px; text-align: center; font-weight: bold; }
-        .nav-item span { display: block; font-size: 20px; }
+        h2 { font-size: 20px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+
+        .input-group { background: #f8f9fa; padding: 10px; border-radius: 12px; margin-bottom: 15px; }
+        select, input, textarea { 
+            width: 100%; border: none; background: transparent; padding: 10px; 
+            font-size: 16px; outline: none; font-family: inherit;
+        }
+
+        .btn-report { 
+            background: linear-gradient(45deg, #eb4d4b, #ff7979); color: white; 
+            border: none; border-radius: 12px; padding: 16px; font-size: 18px; 
+            font-weight: bold; width: 100%; cursor: pointer; transition: 0.4s;
+            box-shadow: 0 5px 15px rgba(235, 77, 75, 0.3);
+        }
+        .btn-report:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(235, 77, 75, 0.4); }
+
+        /* Modern Live Feed */
+        .update-item { 
+            background: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; 
+            display: flex; flex-direction: column; gap: 8px; border-left: 6px solid var(--danger);
+            animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .tag { font-size: 12px; padding: 5px 12px; border-radius: 20px; font-weight: bold; width: fit-content; }
+        .tag-jam { background: #fef9e7; color: #f39c12; }
+        .tag-accident { background: #fdedec; color: #e74c3c; }
+
+        /* Floating Nav */
+        .footer-nav { 
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; background: var(--dark); 
+            border-radius: 50px; display: flex; justify-content: space-around; 
+            padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000;
+        }
+        .nav-item { text-decoration: none; color: white; font-size: 11px; text-align: center; }
+        .nav-item span { display: block; font-size: 22px; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>নিরাপদ যাত্রা 🚗</h1>
-    <p>লাইভ ম্যাপে জ্যাম ও দুর্ঘটনার রিপোর্ট দেখুন</p>
+    <h1>নিরাপদ যাত্রা প্রো 🚀</h1>
+    <p>AI চালিত ঈদ ট্রাফিক মনিটর</p>
 </header>
 
 <div class="container">
     <div id="map"></div>
 
     <div class="card">
-        <h2>লাইভ রিপোর্ট দিন</h2>
-        <select id="type">
-            <option value="জ্যাম">🔴 তীব্র জ্যাম</option>
-            <option value="দুর্ঘটনা">⚠️ দুর্ঘটনা</option>
-            <option value="রাস্তা কাজ চলছে">🚧 রাস্তা কাজ চলছে</option>
-            <option value="স্বাভাবিক">🟢 রাস্তা ক্লিয়ার</option>
-        </select>
-        <input type="text" id="location" placeholder="জায়গার নাম (উদা: সাভার স্ট্যান্ড)">
-        <textarea id="desc" rows="2" placeholder="বিস্তারিত (জ্যাম কতটুকু বা অবস্থা কী)"></textarea>
+        <h2>📍 দ্রুত রিপোর্ট পাঠান</h2>
+        <div class="input-group">
+            <select id="type">
+                <option value="তীব্র জ্যাম">🔴 তীব্র জ্যাম</option>
+                <option value="দুর্ঘটনা">⚠️ দুর্ঘটনা</option>
+                <option value="স্বাভাবিক">🟢 রাস্তা একদম ক্লিয়ার</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <input type="text" id="location" placeholder="জায়গার নাম (অটো-লোকেশন লোড হচ্ছে...)" readonly>
+        </div>
+        <div class="input-group">
+            <textarea id="desc" rows="2" placeholder="অতিরিক্ত তথ্য দিন..."></textarea>
+        </div>
         <button class="btn-report" id="submitBtn" onclick="addReport()">রিপোর্ট সাবমিট করুন</button>
     </div>
 
     <div id="feedContainer">
-        <h2 style="padding-left: 5px;">সাম্প্রতিক আপডেটসমূহ 📡</h2>
+        <h2>📡 রিয়েল-টাইম ফিড</h2>
         <div id="feed">লোড হচ্ছে...</div>
     </div>
 </div>
 
 <div class="footer-nav">
-    <a href="tel:999" class="nav-item"><span>📞</span>জরুরি (৯৯৯)</a>
-    <a href="javascript:void(0)" class="nav-item" onclick="getUserLocation()"><span>📍</span>আমার লোকেশন</a>
+    <a href="tel:999" class="nav-item"><span>🚨</span>সহায়তা</a>
+    <a href="javascript:void(0)" class="nav-item" onclick="getUserLocation()" style="color: var(--warning);"><span>📍</span>আমার কাছে</a>
     <a href="javascript:void(0)" class="nav-item" onclick="loadReports()"><span>🔄</span>রিফ্রেশ</a>
 </div>
 
@@ -80,93 +122,78 @@
     let map, userLat, userLng;
     let markers = [];
 
-    // ম্যাপ চালু করা
     function initMap() {
-        map = L.map('map').setView([23.8103, 90.4125], 7); // ডিফল্ট ঢাকা
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        map = L.map('map', { zoomControl: false }).setView([23.8103, 90.4125], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
         getUserLocation();
     }
 
-    // ইউজারের কারেন্ট লোকেশন নেওয়া
+    // অটোমেটিক অ্যাড্রেস খুঁজে বের করা (Reverse Geocoding)
+    async function getAddress(lat, lng) {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await res.json();
+            document.getElementById('location').value = data.address.suburb || data.address.road || data.display_name.split(',')[0];
+        } catch (e) { document.getElementById('location').value = "লোকেশন পাওয়া যায়নি"; }
+    }
+
     function getUserLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 userLat = position.coords.latitude;
                 userLng = position.coords.longitude;
-                map.setView([userLat, userLng], 13);
-                L.marker([userLat, userLng]).addTo(map).bindPopup("আপনি এখানে আছেন").openPopup();
+                map.setView([userLat, userLng], 14);
+                L.circle([userLat, userLng], { radius: 200 }).addTo(map);
+                getAddress(userLat, userLng);
             });
         }
     }
 
-    // রিপোর্ট লোড এবং ম্যাপে পিন বসানো
     function loadReports() {
-        const feed = document.getElementById('feed');
-        fetch(dbURL)
-        .then(res => res.json())
-        .then(data => {
+        fetch(dbURL).then(res => res.json()).then(data => {
+            const feed = document.getElementById('feed');
             feed.innerHTML = "";
-            // আগের মার্কারগুলো মুছে ফেলা
             markers.forEach(m => map.removeLayer(m));
-            markers = [];
+            if(!data) return feed.innerHTML = "সব ক্লিয়ার!";
 
-            if(!data) {
-                feed.innerHTML = "কোনো রিপোর্ট নেই।";
-                return;
-            }
+            Object.values(data).reverse().forEach(item => {
+                // ম্যাপ মার্কার কালার
+                const color = item.type.includes('জ্যাম') ? 'red' : (item.type.includes('দুর্ঘটনা') ? 'black' : 'green');
+                const m = L.circleMarker([item.lat, item.lng], { color: color, radius: 10, fillOpacity: 0.8 }).addTo(map)
+                           .bindPopup(`<b>${item.type}</b><br>${item.loc}`);
+                markers.push(m);
 
-            const reports = Object.values(data).reverse();
-            reports.forEach(item => {
-                // ম্যাপে পিন বসানো (যদি ল্যাট-লং থাকে)
-                if(item.lat && item.lng) {
-                    let m = L.marker([item.lat, item.lng]).addTo(map)
-                        .bindPopup(`<b>${item.type}</b><br>${item.loc}`);
-                    markers.push(m);
-                }
-
-                // ফিড আপডেট
-                const newItem = document.createElement('div');
-                newItem.className = 'update-item';
-                let tagClass = item.type === 'জ্যাম' ? 'tag-jam' : (item.type === 'দুর্ঘটনা' ? 'tag-accident' : 'tag-clear');
-                newItem.innerHTML = `
-                    <span class="tag ${tagClass}">${item.type}</span><br>
-                    <strong>${item.loc}:</strong> ${item.desc}
-                    <br><small style="color: #888;">${item.time}</small>
+                // ফিড আইটেম
+                const div = document.createElement('div');
+                div.className = 'update-item';
+                div.innerHTML = `
+                    <span class="tag ${item.type.includes('জ্যাম')?'tag-jam':'tag-accident'}">${item.type}</span>
+                    <strong>${item.loc}</strong>
+                    <span>${item.desc}</span>
+                    <small>⏰ ${item.time}</small>
                 `;
-                feed.appendChild(newItem);
+                feed.appendChild(div);
             });
         });
     }
 
-    // নতুন রিপোর্ট সেভ করা
     function addReport() {
         const type = document.getElementById('type').value;
         const loc = document.getElementById('location').value;
-        const desc = document.getElementById('desc').value;
-        const submitBtn = document.getElementById('submitBtn');
-        
-        if(!loc) return alert("জায়গার নাম লিখুন!");
+        const desc = document.getElementById('desc').value || "কোনো বর্ণনা নেই";
+        const time = new Date().toLocaleTimeString('bn-BD', {hour:'2-digit', minute:'2-digit'});
 
-        const time = new Date().toLocaleString('bn-BD', { hour: 'numeric', minute: 'numeric', hour12: true, day: 'numeric', month: 'short' });
-        
-        const newReport = { 
-            type, loc, desc, time,
-            lat: userLat || 23.8103, // লোকেশন না পেলে ঢাকা ডিফল্ট
-            lng: userLng || 90.4125 
-        };
+        if(!userLat) return alert("লোকেশন পারমিশন অন করুন!");
 
-        submitBtn.disabled = true;
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true; btn.innerText = "পাঠানো হচ্ছে...";
+
         fetch(dbURL, {
             method: 'POST',
-            body: JSON.stringify(newReport)
-        })
-        .then(() => {
-            alert("রিপোর্টটি ম্যাপে যুক্ত হয়েছে!");
-            document.getElementById('location').value = '';
-            document.getElementById('desc').value = '';
-            submitBtn.disabled = false;
+            body: JSON.stringify({ type, loc, desc, time, lat: userLat, lng: userLng })
+        }).then(() => {
+            alert("সফলভাবে শেয়ার হয়েছে!");
+            btn.disabled = false; btn.innerText = "রিপোর্ট সাবমিট করুন";
             loadReports();
         });
     }
