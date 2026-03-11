@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>নিরাপদ যাত্রা - ঈদ স্পেশাল</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d63031">
+    
+    <style>
+        :root { 
+            --danger: #d63031; 
+            --warning: #f1c40f; 
+            --success: #27ae60; 
+            --dark: #2d3436; 
+            --light: #f4f7f6;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: var(--light); 
+            margin: 0; 
+            padding-bottom: 80px; 
+            color: var(--dark);
+        }
+
+        header { 
+            background: var(--danger); 
+            color: white; 
+            padding: 25px 15px; 
+            text-align: center; 
+            border-radius: 0 0 25px 25px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        }
+
+        header h1 { margin: 0; font-size: 24px; }
+        header p { margin: 5px 0 0; font-size: 14px; opacity: 0.9; }
+
+        .container { 
+            padding: 15px; 
+            max-width: 500px; 
+            margin: auto; 
+        }
+
+        .card { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+        }
+
+        h2 { font-size: 18px; margin-top: 0; border-bottom: 2px solid var(--light); padding-bottom: 10px; }
+
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
+        
+        select, input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+
+        .btn-report { 
+            background: var(--danger); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            padding: 15px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            width: 100%; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+
+        .btn-report:active { transform: scale(0.98); }
+
+        /* Update Feed */
+        .update-item { 
+            background: #fff; 
+            border-left: 5px solid var(--danger); 
+            padding: 15px; 
+            margin-bottom: 12px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .tag { 
+            font-size: 11px; 
+            padding: 4px 8px; 
+            border-radius: 12px; 
+            color: white; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .tag-jam { background: var(--warning); color: black; }
+        .tag-accident { background: var(--danger); }
+        .tag-clear { background: var(--success); }
+
+        /* Floating Footer */
+        .footer-nav { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: white; 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0; 
+            box-shadow: 0 -3px 15px rgba(0,0,0,0.1); 
+            z-index: 100;
+        }
+
+        .nav-item { 
+            text-decoration: none; 
+            color: var(--dark); 
+            font-size: 11px; 
+            text-align: center; 
+            font-weight: bold;
+        }
+
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 3px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>নিরাপদ যাত্রা 🚗</h1>
+    <p>আপনার একটি রিপোর্ট বাঁচাতে পারে অন্যের সময় ও প্রাণ</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>লাইভ রিপোর্ট দিন</h2>
+        
+        <label>সমস্যার ধরন</label>
+        <select id="type">
+            <option value="জ্যাম">🔴 তীব্র জ্যাম</option>
+            <option value="দুর্ঘটনা">⚠️ দুর্ঘটনা</option>
+            <option value="রাস্তা ভাঙা">🚧 রাস্তা ভাঙা/কাজ চলছে</option>
+            <option value="স্বাভাবিক">🟢 রাস্তা ক্লিয়ার</option>
+        </select>
+
+        <label>জায়গার নাম</label>
+        <input type="text" id="location" placeholder="উদা: সাভার স্ট্যান্ড, কুমিল্লা বাইপাস">
+
+        <label>বিস্তারিত তথ্য</label>
+        <textarea id="desc" rows="2" placeholder="গাড়ির জ্যাম কতটুকু বা অবস্থা কেমন?"></textarea>
+
+        <button class="btn-report" onclick="addReport()">রিপোর্ট সাবমিট করুন</button>
+    </div>
+
+    <div id="feedContainer">
+        <h2 style="padding-left: 5px;">লাইভ আপডেটসমূহ 📡</h2>
+        <div id="feed">
+            <div class="update-item">
+                <span class="tag tag-jam">জ্যাম</span><br>
+                <strong>গাজীপুর চৌরাস্তা:</strong> ফ্লাইওভারের নিচে তীব্র জ্যাম। ৩ কিমি লাইন।
+                <br><small style="color: #888;">২ মিনিট আগে</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer-nav">
+    <a href="tel:999" class="nav-item"><span>📞</span>জরুরি (৯৯৯)</a>
+    <a href="tel:102" class="nav-item"><span>🚑</span>অ্যাম্বুলেন্স</a>
+    <a href="javascript:void(0)" class="nav-item" onclick="location.reload()"><span>🔄</span>রিফ্রেশ</a>
+</div>
+
+<script>
+    // রিপোর্ট যোগ করার ফাংশন
+    function addReport() {
+        const type = document.getElementById('type').value;
+        const loc = document.getElementById('location').value;
+        const desc = document.getElementById('desc').value;
+        
+        if(!loc) {
+            alert("অনুগ্রহ করে জায়গার নাম লিখুন!");
+            return;
+        }
+
+        const feed = document.getElementById('feed');
+        const newItem = document.createElement('div');
+        newItem.className = 'update-item';
+        
+        let tagClass = 'tag-clear';
+        if(type === 'জ্যাম') tagClass = 'tag-jam';
+        if(type === 'দুর্ঘটনা') tagClass = 'tag-accident';
+
+        newItem.innerHTML = `
+            <span class="tag ${tagClass}">${type}</span><br>
+            <strong>${loc}:</strong> ${desc || 'অবস্থা পর্যবেক্ষণাধীন'}
+            <br><small style="color: #888;">এই মাত্র</small>
+        `;
+        
+        feed.prepend(newItem); 
+        
+        // ইনপুট রিসেট
+        document.getElementById('location').value = '';
+        document.getElementById('desc').value = '';
+        
+        alert("ধন্যবাদ মাসুম! আপনার রিপোর্টটি সফলভাবে যুক্ত হয়েছে।");
+    }
+
+    // PWA Service Worker (অফলাইনে চালানোর জন্য)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+        });
+    }
+</script>
+
+</body>
+</html>
